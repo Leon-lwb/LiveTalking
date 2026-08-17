@@ -10,16 +10,26 @@ def llm_response(message,avatar_session:'BaseAvatar',datainfo:dict={}):
         opt = avatar_session.opt
         start = time.perf_counter()
         from openai import OpenAI
-        client = OpenAI(
+        llm_provider = getattr(opt, 'llm', 'dashscope')
+        if llm_provider == 'orcarouter':
+            # OrcaRouter: 兼容 OpenAI 的 LLM 路由网关
+            client = OpenAI(
+                api_key=os.getenv("ORCAROUTER_API_KEY"),
+                base_url="https://api.orcarouter.ai/v1",
+            )
+            llm_model = getattr(opt, 'llm_model', None) or 'orcarouter/auto'
+        else:
             # 如果您没有配置环境变量，请在此处用您的API Key进行替换
-            api_key=os.getenv("DASHSCOPE_API_KEY"),
-            # 填写DashScope SDK的base_url
-            base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-        )
+            client = OpenAI(
+                api_key=os.getenv("DASHSCOPE_API_KEY"),
+                # 填写DashScope SDK的base_url
+                base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+            )
+            llm_model = getattr(opt, 'llm_model', None) or 'qwen-plus'
         end = time.perf_counter()
         logger.info(f"llm Time init: {end-start}s,{message}")
         completion = client.chat.completions.create(
-            model="qwen-plus",
+            model=llm_model,
             messages=[{'role': 'system', 'content': '你是一个知识助手，尽量以简短、口语化的方式输出'},
                     {'role': 'user', 'content': message}],
             stream=True,

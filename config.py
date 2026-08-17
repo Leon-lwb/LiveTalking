@@ -78,6 +78,12 @@ def parse_args():
     parser.add_argument('--REF_TEXT', type=str, default=None)
     parser.add_argument('--TTS_SERVER', type=str, default='http://127.0.0.1:9880')
 
+    # ─── LLM ───────────────────────────────────────────────────────────
+    parser.add_argument('--llm', type=str, default='dashscope',
+                        help="llm provider: dashscope / orcarouter")
+    parser.add_argument('--llm_model', type=str, default='',
+                        help="llm model name（留空使用各 provider 默认模型）")
+
     # ─── 传输 ─────────────────────────────────────────────────────────
     parser.add_argument('--transport', type=str, default='webrtc',
                         help="output: rtcpush/webrtc/rtmp/virtualcam")
