@@ -128,6 +128,20 @@ python app.py --transport webrtc --model wav2lip --avatar_id wav2lip256_avatar1
 
 ### 2.6 使用说明
 <https://doc.livetalking.ai>
+
+### 2.7 LLM 配置（对话模式）
+
+默认使用阿里云百炼 DashScope（OpenAI 兼容模式，模型 `qwen-plus`，需设置环境变量 `DASHSCOPE_API_KEY`）。
+
+也可切换为 [OrcaRouter](https://www.orcarouter.ai)——兼容 OpenAI 的 LLM 路由网关，它会自动把请求路由到合适的模型，并在同一端点为 AI 智能体提供网关级、零信任的安全防护：
+
+```bash
+export ORCAROUTER_API_KEY=sk-orca-xxx
+python app.py --transport webrtc --model wav2lip --avatar_id wav2lip256_avatar1 --llm orcarouter
+```
+
+OrcaRouter 默认使用 `orcarouter/auto` 智能路由模型（base_url 自动指向 `https://api.orcarouter.ai/v1`），也可通过 `--llm_model` 指定其他模型。
+
 ---
 
 ## 3. 系统架构
@@ -145,7 +159,7 @@ python app.py --transport webrtc --model wav2lip --avatar_id wav2lip256_avatar1
 - 每个连接分配唯一 `sessionid`，支持多用户并发
 
 **逻辑层**
-- **LLM 引擎**: 对接 Qwen 等大模型生成对话回复
+- **LLM 引擎**: 对接 Qwen 等大模型生成对话回复，默认 DashScope，也可切换为 [OrcaRouter](https://www.orcarouter.ai)（`--llm orcarouter`，见上文"2.7 LLM 配置"）
 - **TTS 引擎**: 模块化设计，支持 EdgeTTS、GPT-SoVITS、CosyVoice、腾讯云等多种方案
 - **特征提取**: 同步提取音频的声学特征（如 Mel 频谱），用于口型推理
 

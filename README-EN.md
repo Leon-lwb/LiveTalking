@@ -122,6 +122,19 @@ python app.py --transport webrtc --model wav2lip --avatar_id wav2lip256_avatar1
 ### 2.6 Documentation
 <https://doc.livetalking.ai/en>
 
+### 2.7 LLM Configuration (Chat Mode)
+
+By default, LiveTalking uses Alibaba Cloud DashScope (OpenAI-compatible mode, model `qwen-plus`, requires the `DASHSCOPE_API_KEY` environment variable).
+
+You can also switch to [OrcaRouter](https://www.orcarouter.ai) — an OpenAI-compatible LLM routing gateway that automatically routes requests to a suitable model and provides gateway-level, zero-trust security for AI agents on the same endpoint:
+
+```bash
+export ORCAROUTER_API_KEY=sk-orca-xxx
+python app.py --transport webrtc --model wav2lip --avatar_id wav2lip256_avatar1 --llm orcarouter
+```
+
+OrcaRouter uses the `orcarouter/auto` adaptive routing model by default (base_url automatically points to `https://api.orcarouter.ai/v1`); use `--llm_model` to specify another model.
+
 ---
 
 ## 3. Architecture
@@ -138,7 +151,7 @@ python app.py --transport webrtc --model wav2lip --avatar_id wav2lip256_avatar1
 - Each connection is assigned a unique `sessionid`, supporting multi-user concurrency
 
 **Logic Layer**
-- **LLM Engine**: Integrates with models like Qwen to generate conversational responses
+- **LLM Engine**: Integrates with models like Qwen for conversational responses; DashScope by default, or switch to [OrcaRouter](https://www.orcarouter.ai) with `--llm orcarouter` (see "2.7 LLM Configuration" above)
 - **TTS Engine**: Modular design supporting EdgeTTS, GPT-SoVITS, CosyVoice, Tencent Cloud, and more
 - **Feature Extraction**: Synchronously extracts acoustic features (e.g., Mel spectrograms) for lip-sync inference
 
